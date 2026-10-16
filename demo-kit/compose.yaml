@@ -1,0 +1,50 @@
+name: linkwarden-demo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python3 start.py first}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.13.3
+    restart: unless-stopped
+    environment:
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?Run python3 start.py first}
+    volumes:
+      - meili_data:/meili_data
+
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:v2.16.3
+    restart: unless-stopped
+    environment:
+      NEXTAUTH_URL: ${NEXTAUTH_URL:?Run python3 start.py first}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Run python3 start.py first}
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+      MEILI_HOST: http://meilisearch:7700
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?Run python3 start.py first}
+    ports:
+      - "${BIND_HOST:-127.0.0.1}:${DEMO_PORT:-3101}:3000"
+    volumes:
+      - archive_data:/data/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      meilisearch:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  meili_data:
+  archive_data:

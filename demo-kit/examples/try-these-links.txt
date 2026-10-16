@@ -1,0 +1,7 @@
+在 Linkwarden 注册第一个本地账号后，分别保存以下三个公开页面，观察标题、标签和页面存档：
+
+https://github.com/linkwarden/linkwarden
+https://github.com/open-webui/open-webui
+https://github.com/n8n-io/n8n
+
+这些只是演示链接，不含私人书签。

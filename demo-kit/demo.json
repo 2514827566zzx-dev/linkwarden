@@ -1,0 +1,6 @@
+{
+  "name": "Linkwarden",
+  "default_port": "3101",
+  "health_path": "/",
+  "secret_keys": ["NEXTAUTH_SECRET", "POSTGRES_PASSWORD", "MEILI_MASTER_KEY"]
+}
